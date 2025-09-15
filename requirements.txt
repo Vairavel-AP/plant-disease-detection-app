@@ -1,0 +1,5 @@
+Flask
+tensorflow
+numpy
+google-generativeai
+gunicorn     # if you deploy
