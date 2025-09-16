@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Plant Disease Classification</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
   <div class="container zoom-in">
-    <h1>🌱 Plant Disease Classification</h1>
+    <h1 class="floating">🌱 Plant Disease Classification</h1>
     <p>Upload an Image for Prediction</p>
 
     <!-- Upload Form -->
@@ -41,6 +43,12 @@
 
     <!-- Error Message -->
     <p id="error" class="error"></p>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <img src="{{ url_for('static', filename='vairavel.png') }}" alt="Vairavel">
+    <p>Created by <strong>Vairavel</strong></p>
   </div>
 
   <script>
@@ -93,47 +101,50 @@
 
     // Handle precautions
     // Handle precautions
-precautionsBtn.addEventListener("click", async () => {
-  precautionsBtn.disabled = true;
-  try {
-    const res = await fetch("/get_precautions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ predicted_class: predictedClassEl.textContent }),
-    });
-    const data = await res.json();
-
-    precautionsList.innerHTML = "";
-    if (data.error) {
-      precautionsList.innerHTML = "<p class='error'>Error: " + data.error + "</p>";
-    } else {
-      for (const [key, value] of Object.entries(data)) {
-        const box = document.createElement("div");
-        box.className = "precaution-box slide-up";
-
-        // Convert Gemini response into bullet points
-        const points = value
-          .split(/[\n•\-]/) // split by newlines or bullets
-          .map(p => p.trim())
-          .filter(p => p.length > 0);
-
-        let listHTML = "<ul>";
-        points.forEach(p => {
-          listHTML += `<li>${p}</li>`;
+    precautionsBtn.addEventListener("click", async () => {
+      precautionsBtn.disabled = true;
+      try {
+        const res = await fetch("/get_precautions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ predicted_class: predictedClassEl.textContent }),
         });
-        listHTML += "</ul>";
+        const data = await res.json();
 
-        box.innerHTML = `<h3>${key}</h3>${listHTML}`;
-        precautionsList.appendChild(box);
+        precautionsList.innerHTML = "";
+        if (data.error) {
+          precautionsList.innerHTML = "<p class='error'>Error: " + data.error + "</p>";
+        } else {
+          for (const [key, value] of Object.entries(data)) {
+            const box = document.createElement("div");
+            box.className = "precaution-box slide-up";
+
+            // Split by new lines only (cleaner separation)
+            const points = value
+              .split(/\n+/)
+              .map(p => p.replace(/^\d+[\.\)]\s*/, "").trim()) // remove unwanted numbering
+              .filter(p => p.length > 0);
+
+            // Build list with ✔ icons
+            let listHTML = `<div class="precaution-list">`;
+            points.forEach(p => {
+              listHTML += `<p class="precaution-item"> ${p}</p>`;
+            });
+            listHTML += "</div>";
+
+            // Highlight subsection titles
+            box.innerHTML = `<h3 class="precaution-title">${key}</h3>${listHTML}`;
+            precautionsList.appendChild(box);
+          }
+          precautionsDiv.classList.remove("hidden");
+        }
+      } catch {
+        precautionsList.innerHTML = "<p class='error'>Error: Failed to fetch precautions.</p>";
       }
-      precautionsDiv.classList.remove("hidden");
-    }
-  } catch {
-    precautionsList.innerHTML = "<p class='error'>Error: Failed to fetch precautions.</p>";
-  }
-  precautionsBtn.disabled = false;
-});
+      precautionsBtn.disabled = false;
+    });
 
   </script>
 </body>
+
 </html>
