@@ -6,6 +6,10 @@ import logging
 import google.generativeai as genai
 import json
 
+import logging
+logging.basicConfig(level=logging.INFO)
+
+
 # Initialize Flask app
 app = Flask(__name__)
 
