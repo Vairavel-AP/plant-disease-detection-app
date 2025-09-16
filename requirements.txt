@@ -1,6 +1,6 @@
 Flask>=2.1
 gunicorn
-tensorflow==2.12.0        # or tensorflow-cpu if you want smaller CPU-only package
+tensorflow==2.20.0        # or tensorflow-cpu if you want smaller CPU-only package
 numpy
 pillow
 google-generativeai       # Gemini client package
